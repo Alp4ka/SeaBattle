@@ -53,10 +53,16 @@ public class Baseship implements IBattleship{
         return _head;
     }
 
-    public void setHead(Point _head) {
-        this._head = _head;
+    public boolean getOrientation(){
+        return _isHorizontal;
     }
 
+    public void setOrientation(boolean value){
+        _isHorizontal = value;
+    }
+    public void setHead(Point value){
+        _head = value;
+    }
     public int getShipLength() {
         return _shipLength;
     }

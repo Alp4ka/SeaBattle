@@ -14,4 +14,10 @@ public interface IBattleship {
     String represent();
     ArrayList<Point> getShipPointVector();
     boolean isAlive();
+    int getHealthAt(int index);
+    Point getHead();
+    void setHead(Point value);
+    boolean getOrientation();
+    void setOrientation(boolean value);
+    int getShipLength();
 }

@@ -6,14 +6,15 @@ import game.models.IGameObject;
 import game.models.ShipBlock;
 import game.utils.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class GameField {
-    public static final int MAX_FIELD_SIZE = 10;
-    public static final int STANDART_DAMAGE = 100;
+    public static final int MAX_FIELD_SIZE = 15;
+    public static final int STANDART_DAMAGE = ShipBlock.MAX_HP;
 
     private ArrayList<ArrayList<IGameObject>> _field;
     private ArrayList<IBattleship> _ships;
-    private ArrayList<Point> _shotsList;
+    private HashSet<Point> _shotsList;
     private int _fieldWidth;
     private int _fieldHeight;
     private void initializeField(){
@@ -28,8 +29,8 @@ public class GameField {
 
     public boolean isAttackedAt(Point position){
         boolean result = false;
-        for(int i = 0; i < _shotsList.size(); ++i){
-            if(_shotsList.get(i).equals(position)){
+        for(Point shot: _shotsList){
+            if(shot.equals(position)){
                 result = true;
             }
         }
@@ -37,12 +38,15 @@ public class GameField {
     }
 
 
-    public boolean attackAt(Point position) {
-        if(!isAttackedAt(position)){
-            _shotsList.add(position);
+    public boolean attackAt(Point position) throws IllegalArgumentException{
+        if(position.x < 0 || position.y < 0 || position.x >= _fieldWidth || position.y >= _fieldHeight){
+            throw new IllegalArgumentException("You can't attack outside the gamefield!");
         }
         if(isAttackable(position)){
-            ((ShipBlock)_field.get(position.y).get(position.x)).getDamage(STANDART_DAMAGE);
+            _shotsList.add(position);
+            ShipBlock target = ((ShipBlock)_field.get(position.y).get(position.x));
+            target.getDamage(STANDART_DAMAGE);
+            onHit(target);
             return true;
         }
         else{
@@ -81,7 +85,7 @@ public class GameField {
         _fieldWidth = width;
         _fieldHeight = height;
         _ships = new ArrayList<>();
-        _shotsList = new ArrayList<>();
+        _shotsList = new HashSet<>();
         initializeField();
     }
 
@@ -98,21 +102,32 @@ public class GameField {
         return _ships;
     }
 
-    //todo
+    // call it in case u hit smth.
+    public void onHit(ShipBlock shipBlock){
+        IBattleship parent = shipBlock.getParent();
+        System.out.println(parent.represent());
+        if(parent.isAlive()){
+            System.out.println("HITTED");
+        }
+        else{
+            System.out.println("DEAD");
+        }
+    }
+
+
     public void Draw(){
         System.out.println("Normal field");
-        System.out.print("  ");
-        for(int i =0;i < _fieldWidth; ++i){
-            System.out.print(i + " ");
+        for(int i = 0;i < _fieldWidth; ++i){
+            System.out.print((char)('A'+i) + "\t");
         }
         System.out.println();
 
         for(int i =0;i < _fieldHeight; ++i){
-            System.out.print(i + " ");
             for(int j =0;j < _fieldWidth; ++j){
                 System.out.print(_field.get(i).get(j).represent());
-                System.out.print(' ');
+                System.out.print("\t");
             }
+            System.out.print("\b  " + i);
             System.out.println();
         }
         System.out.println();

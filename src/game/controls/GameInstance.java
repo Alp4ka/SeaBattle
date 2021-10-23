@@ -12,7 +12,7 @@ public class GameInstance {
     public GameInstance(int width, int height, Player firstPlayer, Player secondPlayer) throws IllegalArgumentException{
         _winner = null;
         if(firstPlayer == null || secondPlayer == null){
-            throw new IllegalArgumentException("One or more players were null.");
+            throw new IllegalArgumentException("Player can't be null!");
         }
         _activePlayer = firstPlayer;
 
@@ -23,6 +23,10 @@ public class GameInstance {
 
     public Player getActivePlayer() {
         return _activePlayer;
+    }
+
+    public void OnFinish(){
+        _gameOver = true;
     }
 
     public Player getWinner(){

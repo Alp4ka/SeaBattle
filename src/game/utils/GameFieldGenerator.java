@@ -53,58 +53,76 @@ public class GameFieldGenerator {
         return false;
     }
 
-    public boolean placeRandom(IBattleship newShip){
-        return true;
+    // false if u re not able
+    public boolean addShipRandom(IBattleship newShip){
+        int randomX, randomY;
+        boolean randomOrientation;
+        randomX = ((int) (Math.sqrt(Math.random() * Math.random())  * GameField.MAX_FIELD_SIZE)) % GameField.MAX_FIELD_SIZE;
+        randomY = ((int) (Math.sqrt(Math.random() * Math.random())  * GameField.MAX_FIELD_SIZE)) % GameField.MAX_FIELD_SIZE;
+        randomOrientation = ((int)(Math.sqrt(Math.random() * Math.random())  * 2)) == 1;
+        Point startPoint = new Point(randomX, randomY);
+        newShip.setHead(startPoint);
+        newShip.setOrientation(randomOrientation);
+
+        //from point to right down.
+        for(int i = newShip.getHead().y ;i < _field.getHeight(); ++i){
+            for(int j = newShip.getHead().x ;j < _field.getWidth(); ++j){
+                newShip.setHead(new Point(j ,i));
+                if(addShip(newShip)){ return true; }
+                newShip.setOrientation(!newShip.getOrientation());
+                if(addShip(newShip)){ return true; }
+            }
+        }
+        //from paint to left up in case it was not succeed on prev step.
+        for(int i = newShip.getHead().y ;i >= 0; --i){
+            for(int j = newShip.getHead().x ;j >= 0; --j){
+                newShip.setHead(new Point(j ,i));
+                if(addShip(newShip)){ return true; }
+                newShip.setOrientation(!newShip.getOrientation());
+                if(addShip(newShip)){ return true; }
+            }
+        }
+        return false;
     }
 
     public boolean addByShipType(ShipTypes shipType){
-        int randomX, randomY;
-        boolean randomOrientation;
-        randomX = (int) (Math.random() * GameField.MAX_FIELD_SIZE);
-        randomY = (int) (Math.random() * GameField.MAX_FIELD_SIZE);
-        randomOrientation = ((int)(Math.random() * 2)) == 1;
-
-        Point startPoint = new Point(randomX, randomY);
+        Point tempHead = new Point(-1, -1);
         IBattleship ship;
         switch(shipType){
             case Submarine:
-                ship = new Submarine(startPoint, randomOrientation);
+                ship = new Submarine(tempHead, false);
                 break;
             case Destroyer:
-                ship = new Destroyer(startPoint, randomOrientation);
+                ship = new Destroyer(tempHead, false);
                 break;
             case Cruiser:
-                ship = new Cruiser(startPoint, randomOrientation);
+                ship = new Cruiser(tempHead, false);
                 break;
             case Battleship:
-                ship = new Battleship(startPoint, randomOrientation);
+                ship = new Battleship(tempHead, false);
                 break;
             case Carrier:
-                ship = new Carrier(startPoint, randomOrientation);
+                ship = new Carrier(tempHead, false);
                 break;
             default:
                 return false;
         }
-
-        //todo
-        return true;
+        boolean result = addShipRandom(ship);
+        return result;
     }
 
-    // false if ure not able to place this ship;
-    public boolean placeOnRandomPosition(){
-        return false;
-    }
 
     //Returns square area around point.
     public ArrayList<Point> getAmbientOfPoint(Point point){
         ArrayList<Point> result = new ArrayList<>();
         for(int i = -1; i <= 1; ++i){
             for(int j = -1; j <= 1; ++j){
-                try{ result.add(new Point(point.x + i, point.y + j)); }
-                catch(Exception ex){}
+                Point temp = new Point(point.x + i, point.y + j);
+                if(temp.x >= 0 && temp.x < _field.getWidth() && temp.y >= 0 && temp.y < _field.getHeight()){
+                    result.add(temp);
+                }
             }
         }
-        result.add(new Point(point));
         return result;
     }
 
