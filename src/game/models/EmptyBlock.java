@@ -1,11 +1,11 @@
 package game.models;
 
 public class EmptyBlock implements IGameObject{
-    public EmptyBlock(){
+    private static final char REPR = '.';
+    public EmptyBlock(){}
 
-    }
     @Override
-    public String toString(){
-        return "";
+    public char represent(){
+        return REPR;
     }
 }

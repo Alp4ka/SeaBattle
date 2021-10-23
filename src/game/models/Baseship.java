@@ -8,7 +8,6 @@ public class Baseship implements IBattleship{
     private Point _head;
     private int _shipLength;
     private boolean _isHorizontal;
-    private static final char _drawSymbol = '*';
     private List<ShipBlock> _shipArray;
     private void initializeShipArray(){
         _shipArray = new ArrayList<ShipBlock>(_shipLength);
@@ -17,6 +16,9 @@ public class Baseship implements IBattleship{
         }
     }
 
+    public List<ShipBlock> getShipBlocksVector(){
+        return _shipArray;
+    }
 
     public Baseship(Point head, int length, boolean isHorizontal){
         _head = new Point(head);
@@ -34,14 +36,11 @@ public class Baseship implements IBattleship{
     }
 
     public boolean getDamageAt(int index, int damage){
-        if(_shipArray.get(index).getHP() == 0){
+        if(!_shipArray.get(index).isAlive()){
             return false;
         }
         else{
-            _shipArray.get(index).setHP(_shipArray.get(index).getHP() - damage);
-            if(_shipArray.get(index).getHP() < 0){
-                _shipArray.get(index).setHP(0);
-            }
+            _shipArray.get(index).getDamage(damage);
             return true;
         }
     }
@@ -65,10 +64,23 @@ public class Baseship implements IBattleship{
     public String toString(){
         String result = "";
         for(int i =0; i < _shipArray.size(); ++i){
-            result += _shipArray.get(i).getHP() > 0 ? _drawSymbol : 'X';
+            result += _shipArray.get(i).represent();
         }
         return result;
     }
+
+    public ArrayList<Point> getShipPointVector(){
+        ArrayList<Point> result = new ArrayList<>(_shipLength);
+        Point current = new Point(_head);
+        Point shift = new Point(0, 0);
+        Point shiftValue = _isHorizontal? new Point(1, 0) : new Point(0, 1);
+        for(int i=0; i < _shipLength; ++i){
+            result.add(current.add(shift));
+            shift = shift.add(shiftValue);
+        }
+        return result;
+    }
+
     public String represent(){
         return "Status: " + (isAlive() ? "Alive" : "Sinked")
                 + "; View: " + toString() +
