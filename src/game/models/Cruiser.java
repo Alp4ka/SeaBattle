@@ -2,7 +2,7 @@ package game.models;
 
 import game.utils.Point;
 
-public class Cruiser extends Baseship{
+public final class Cruiser extends Baseship{
     private static final int SIZE = 3;
     private static final String NAME = "CRUISER";
 

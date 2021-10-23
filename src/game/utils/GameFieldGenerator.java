@@ -5,9 +5,9 @@ import game.models.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class GameFieldGenerator {
+public final class GameFieldGenerator {
     private GameField _field;
-    public boolean isAllowedToPlace(IBattleship ship){
+    public boolean isAllowedToPlace(Ship ship){
         ArrayList<Point> newShipVector = ship.getShipPointVector();
         ArrayList<Point> shipsOnFieldPoints = new ArrayList<>();
         for(int i =0; i < _field.getShips().size(); ++i){
@@ -36,16 +36,23 @@ public class GameFieldGenerator {
         Carrier
     }
 
-    public GameFieldGenerator(int width, int height){
-        _field = new GameField(width, height);
+    public GameFieldGenerator(GameConfiguration config) throws RuntimeException{
+        _field = new GameField(config.width(), config.height());
+        for(ShipTypes shipType: config.shipTypes()){
+            if(!addByShipType(shipType)){
+                if(!addByShipType(shipType)){
+                    throw new RuntimeException("Cant place " + shipType + " on map!");
+                }
+            }
+        }
     }
 
-    public void placeShip(IBattleship ship){
+    public void placeShip(Ship ship){
         _field.addShip(ship);
     }
 
     // TODO
-    public boolean addShip(IBattleship newShip){
+    public boolean addShip(Ship newShip){
         if(isAllowedToPlace(newShip)){
             placeShip(newShip);
             return true;
@@ -54,32 +61,35 @@ public class GameFieldGenerator {
     }
 
     // false if u re not able
-    public boolean addShipRandom(IBattleship newShip){
+    public boolean addShipRandom(Ship newShip){
         int randomX, randomY;
         boolean randomOrientation;
-        randomX = ((int) (Math.sqrt(Math.random() * Math.random())  * GameField.MAX_FIELD_SIZE)) % GameField.MAX_FIELD_SIZE;
-        randomY = ((int) (Math.sqrt(Math.random() * Math.random())  * GameField.MAX_FIELD_SIZE)) % GameField.MAX_FIELD_SIZE;
+        randomX = ((int) (Math.sqrt(Math.random() * Math.random()) * _field.getWidth())) % _field.getWidth();
+        randomY = ((int) (Math.sqrt(Math.random() * Math.random()) * _field.getHeight())) % _field.getHeight();
         randomOrientation = ((int)(Math.sqrt(Math.random() * Math.random())  * 2)) == 1;
         Point startPoint = new Point(randomX, randomY);
         newShip.setHead(startPoint);
         newShip.setOrientation(randomOrientation);
 
         //from point to right down.
+        boolean firstIteration = true;
         for(int i = newShip.getHead().y ;i < _field.getHeight(); ++i){
-            for(int j = newShip.getHead().x ;j < _field.getWidth(); ++j){
+            for(int j = firstIteration ? newShip.getHead().x : 0 ;j < _field.getWidth(); ++j){
                 newShip.setHead(new Point(j ,i));
                 if(addShip(newShip)){ return true; }
                 newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
+                firstIteration = false;
             }
         }
         //from paint to left up in case it was not succeed on prev step.
         for(int i = newShip.getHead().y ;i >= 0; --i){
-            for(int j = newShip.getHead().x ;j >= 0; --j){
+            for(int j = firstIteration ? newShip.getHead().x : 0 ;j >= 0; --j){
                 newShip.setHead(new Point(j ,i));
                 if(addShip(newShip)){ return true; }
                 newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
+                firstIteration = false;
             }
         }
         return false;
@@ -87,7 +97,7 @@ public class GameFieldGenerator {
 
     public boolean addByShipType(ShipTypes shipType){
         Point tempHead = new Point(-1, -1);
-        IBattleship ship;
+        Ship ship;
         switch(shipType){
             case Submarine:
                 ship = new Submarine(tempHead, false);

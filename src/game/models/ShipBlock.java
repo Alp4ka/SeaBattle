@@ -1,24 +1,24 @@
 package game.models;
 
-public class ShipBlock implements IGameObject{
+public final class ShipBlock implements GameObject {
     public static final int MAX_HP = 100;
     public static final int MIN_HP = 0;
-    private static final char STANDARD_REPR = '₪';
-    private static final char DEAD_REPR = 'x';
-    private static final char HITTED_REPR = '*';
-    private IBattleship _parent;
+    public static final char STANDARD_REPR = '₪';
+    public static final char DEAD_REPR = 'T';
+    public static final char HITTED_REPR = '*';
+    private Ship _parent;
     private int _HP;
 
-    public ShipBlock(IBattleship parent, int hp){
+    public ShipBlock(Ship parent, int hp){
         _HP = hp;
         _parent = parent;
     }
 
-    public ShipBlock(IBattleship parent){
+    public ShipBlock(Ship parent){
         this(parent, MAX_HP);
     }
 
-    public IBattleship getParent(){
+    public Ship getParent(){
         return _parent;
     }
 
@@ -36,6 +36,10 @@ public class ShipBlock implements IGameObject{
 
     public void getDamage(int damage){
         setHP(_HP-damage);
+    }
+
+    public void suicide(){
+        setHP(MIN_HP);
     }
 
     @Override

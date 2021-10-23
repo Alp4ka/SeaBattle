@@ -1,19 +1,19 @@
 package game.controls;
 
 import game.models.EmptyBlock;
-import game.models.IBattleship;
-import game.models.IGameObject;
+import game.models.Ship;
+import game.models.GameObject;
 import game.models.ShipBlock;
 import game.utils.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class GameField {
+public final class GameField {
     public static final int MAX_FIELD_SIZE = 15;
     public static final int STANDART_DAMAGE = ShipBlock.MAX_HP;
 
-    private ArrayList<ArrayList<IGameObject>> _field;
-    private ArrayList<IBattleship> _ships;
+    private ArrayList<ArrayList<GameObject>> _field;
+    private ArrayList<Ship> _ships;
     private HashSet<Point> _shotsList;
     private int _fieldWidth;
     private int _fieldHeight;
@@ -25,6 +25,14 @@ public class GameField {
                 _field.get(i).add(new EmptyBlock());
             }
         }
+    }
+
+    private boolean isInBounds(Point point){
+        return point.x >= 0 || point.y >= 0 || point.x < _fieldWidth || point.y < _fieldHeight;
+    }
+
+    public boolean isAlive(){
+        return _ships.stream().filter(Ship::isAlive).count() > 0;
     }
 
     public boolean isAttackedAt(Point position){
@@ -39,9 +47,10 @@ public class GameField {
 
 
     public boolean attackAt(Point position) throws IllegalArgumentException{
-        if(position.x < 0 || position.y < 0 || position.x >= _fieldWidth || position.y >= _fieldHeight){
+        if(!isInBounds(position)){
             throw new IllegalArgumentException("You can't attack outside the gamefield!");
         }
+        _shotsList.add(position);
         if(isAttackable(position)){
             _shotsList.add(position);
             ShipBlock target = ((ShipBlock)_field.get(position.y).get(position.x));
@@ -54,17 +63,34 @@ public class GameField {
         }
     }
 
+    public boolean attackTorpedoAt(Point position) throws IllegalArgumentException{
+        if(!isInBounds(position)){
+            throw new IllegalArgumentException("You can't attack outside the gamefield!");
+        }
+        _shotsList.add(position);
+        if(isAttackable(position)){
+            ShipBlock target = ((ShipBlock)_field.get(position.y).get(position.x));
+            _shotsList.addAll(target.getParent().getShipPointVector());
+            target.getParent().suicide();
+            onHit(target);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     // Bez proverki sdelano!
-    public void addShip(IBattleship newShip){
+    public void addShip(Ship newShip){
         _ships.add(newShip);
         ArrayList<Point> vector = newShip.getShipPointVector();
         for(int i =0; i < vector.size(); ++i){
-            IGameObject o = newShip.getShipBlocksVector().get(i);
+            GameObject o = newShip.getShipBlocksVector().get(i);
             _field.get(vector.get(i).y).set(vector.get(i).x, o);
         }
     }
 
-    public IGameObject getAt(Point position){
+    public GameObject getAt(Point position){
         return _field.get(position.y).get(position.x);
     }
 
@@ -98,13 +124,13 @@ public class GameField {
         return _fieldHeight;
     }
 
-    public ArrayList<IBattleship> getShips(){
+    public ArrayList<Ship> getShips(){
         return _ships;
     }
 
     // call it in case u hit smth.
     public void onHit(ShipBlock shipBlock){
-        IBattleship parent = shipBlock.getParent();
+        Ship parent = shipBlock.getParent();
         System.out.println(parent.represent());
         if(parent.isAlive()){
             System.out.println("HITTED");
@@ -115,7 +141,7 @@ public class GameField {
     }
 
 
-    public void Draw(){
+    public void draw(){
         System.out.println("Normal field");
         for(int i = 0;i < _fieldWidth; ++i){
             System.out.print((char)('A'+i) + "\t");
@@ -134,18 +160,26 @@ public class GameField {
     }
 
     //TODO
-    public void DrawHidden(){
+    public void drawHidden(){
         System.out.println("Hidden field");
+        for(int i = 0;i < _fieldWidth; ++i){
+            System.out.print((char)('A'+i) + "\t");
+        }
+        System.out.println();
+
         for(int i =0;i < _fieldHeight; ++i){
             for(int j =0;j < _fieldWidth; ++j){
                 Point current = new Point(j, i);
-                //if()
-                //if(System.out.print(_field.get(i).get(j))
-                System.out.print(_field.get(i).get(j).represent());
-                System.out.print(' ');
+                if (_shotsList.contains(current)){
+                    System.out.print(_field.get(i).get(j).represent() + "\t");
+                }
+                else{
+                    System.out.print(EmptyBlock.INV + "\t");
+                }
             }
-            System.out.print('\n');
+            System.out.print("\b  " + i);
+            System.out.println();
         }
-        System.out.print('\n');
+        System.out.println();
     }
 }

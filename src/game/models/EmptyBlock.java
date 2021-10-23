@@ -1,7 +1,8 @@
 package game.models;
 
-public class EmptyBlock implements IGameObject{
-    private static final char REPR = '·';
+public final class EmptyBlock implements GameObject {
+    public static final char REPR = '·';
+    public static final char INV = '?';
     public EmptyBlock(){}
 
     @Override

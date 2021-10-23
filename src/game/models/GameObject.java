@@ -1,5 +1,5 @@
 package game.models;
 
-public interface IGameObject {
+public interface GameObject {
     char represent();
 }

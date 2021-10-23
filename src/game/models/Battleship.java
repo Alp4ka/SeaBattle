@@ -2,7 +2,7 @@ package game.models;
 
 import game.utils.Point;
 
-public class Battleship extends Baseship{
+public final class Battleship extends Baseship{
     private static final int SIZE = 4;
     private static final String NAME = "BATTLESHIP";
 

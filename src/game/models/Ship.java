@@ -4,7 +4,7 @@ import game.utils.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface IBattleship {
+public interface Ship {
     Point _head = null;
     int _shipLength = 0;
     boolean _isHorizontal = false;
@@ -20,4 +20,5 @@ public interface IBattleship {
     boolean getOrientation();
     void setOrientation(boolean value);
     int getShipLength();
+    void suicide();
 }

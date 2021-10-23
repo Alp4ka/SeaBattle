@@ -4,7 +4,7 @@ import game.utils.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Baseship implements IBattleship{
+public class Baseship implements Ship {
     private Point _head;
     private int _shipLength;
     private boolean _isHorizontal;
@@ -85,6 +85,12 @@ public class Baseship implements IBattleship{
             shift = shift.add(shiftValue);
         }
         return result;
+    }
+
+    public void suicide(){
+        for(ShipBlock block: _shipArray){
+            block.suicide();
+        }
     }
 
     public String represent(){

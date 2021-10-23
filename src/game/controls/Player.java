@@ -1,13 +1,7 @@
 package game.controls;
 
+import game.utils.Point;
+
 public class Player {
-    private String _name;
-
-    public String get_name() {
-        return _name;
-    }
-
-    public void set_name(String _name) {
-        this._name = _name;
-    }
+    private static final int TORPEDOS_START_AMOUNT = 1;
 }
