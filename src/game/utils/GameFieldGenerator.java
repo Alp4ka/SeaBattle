@@ -12,7 +12,7 @@ public final class GameFieldGenerator {
         ArrayList<Point> shipsOnFieldPoints = new ArrayList<>();
         for(int i =0; i < _field.getShips().size(); ++i){
             _field.getShips().get(i).getShipPointVector().stream().
-                    map((p)->getAmbientOfPoint(p)).
+                    map((p)->_field.getAmbientOfPoint(p)).
                     forEach(shipsOnFieldPoints::addAll);
         }
         shipsOnFieldPoints = (ArrayList<Point>) shipsOnFieldPoints.stream().distinct().collect(Collectors.toList());
@@ -64,9 +64,9 @@ public final class GameFieldGenerator {
     public boolean addShipRandom(Ship newShip){
         int randomX, randomY;
         boolean randomOrientation;
-        randomX = ((int) (Math.sqrt(Math.random() * Math.random()) * _field.getWidth())) % _field.getWidth();
-        randomY = ((int) (Math.sqrt(Math.random() * Math.random()) * _field.getHeight())) % _field.getHeight();
-        randomOrientation = ((int)(Math.sqrt(Math.random() * Math.random())  * 2)) == 1;
+        randomX = ((int) (Math.random() * _field.getWidth())) % _field.getWidth();
+        randomY = ((int) (Math.random() * _field.getHeight())) % _field.getHeight();
+        randomOrientation = ((int)(Math.random() * 2)) == 1;
         Point startPoint = new Point(randomX, randomY);
         newShip.setHead(startPoint);
         newShip.setOrientation(randomOrientation);
@@ -76,6 +76,7 @@ public final class GameFieldGenerator {
         for(int i = newShip.getHead().y ;i < _field.getHeight(); ++i){
             for(int j = firstIteration ? newShip.getHead().x : 0 ;j < _field.getWidth(); ++j){
                 newShip.setHead(new Point(j ,i));
+                newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
                 newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
@@ -84,8 +85,9 @@ public final class GameFieldGenerator {
         }
         //from paint to left up in case it was not succeed on prev step.
         for(int i = newShip.getHead().y ;i >= 0; --i){
-            for(int j = firstIteration ? newShip.getHead().x : 0 ;j >= 0; --j){
+            for(int j = firstIteration ? newShip.getHead().x : _field.getWidth()-1 ;j >= 0; --j){
                 newShip.setHead(new Point(j ,i));
+                newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
                 newShip.setOrientation(!newShip.getOrientation());
                 if(addShip(newShip)){ return true; }
@@ -118,21 +120,6 @@ public final class GameFieldGenerator {
                 return false;
         }
         boolean result = addShipRandom(ship);
-        return result;
-    }
-
-
-    //Returns square area around point.
-    public ArrayList<Point> getAmbientOfPoint(Point point){
-        ArrayList<Point> result = new ArrayList<>();
-        for(int i = -1; i <= 1; ++i){
-            for(int j = -1; j <= 1; ++j){
-                Point temp = new Point(point.x + i, point.y + j);
-                if(temp.x >= 0 && temp.x < _field.getWidth() && temp.y >= 0 && temp.y < _field.getHeight()){
-                    result.add(temp);
-                }
-            }
-        }
         return result;
     }
 

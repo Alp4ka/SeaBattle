@@ -93,8 +93,23 @@ public class Baseship implements Ship {
         }
     }
 
+    public int getHP(){
+        int sum =0;
+        for(var block: _shipArray){
+            sum+=block.getHP();
+        }
+        return sum;
+    }
+    public int maxHP(){
+        return maxHP() * _shipArray.size();
+    }
+
+    public boolean isHitted(){
+        return isAlive() && getHP() < maxHP();
+    }
+
     public String represent(){
-        return "Status: " + (isAlive() ? "Alive" : "Sinked")
+        return "Status: " + (isAlive() ? "Alive" : "Sink")
                 + "; View: " + toString() +
                 "; Position: " + _head + " " + (_isHorizontal? "Horizontal" : "Vertical");
     }

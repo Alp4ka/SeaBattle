@@ -27,12 +27,26 @@ public final class GameField {
         }
     }
 
-    private boolean isInBounds(Point point){
+    public boolean isInBounds(Point point){
         return point.x >= 0 || point.y >= 0 || point.x < _fieldWidth || point.y < _fieldHeight;
     }
 
     public boolean isAlive(){
         return _ships.stream().filter(Ship::isAlive).count() > 0;
+    }
+
+    //Returns square area around point.
+    public ArrayList<Point> getAmbientOfPoint(Point point){
+        ArrayList<Point> result = new ArrayList<>();
+        for(int i = -1; i <= 1; ++i){
+            for(int j = -1; j <= 1; ++j){
+                Point temp = new Point(point.x + i, point.y + j);
+                if(temp.x >= 0 && temp.x < _fieldWidth && temp.y >= 0 && temp.y < _fieldHeight){
+                    result.add(temp);
+                }
+            }
+        }
+        return result;
     }
 
     public boolean isAttackedAt(Point position){
@@ -67,6 +81,7 @@ public final class GameField {
         if(!isInBounds(position)){
             throw new IllegalArgumentException("You can't attack outside the gamefield!");
         }
+        System.out.println("Torpedo!");
         _shotsList.add(position);
         if(isAttackable(position)){
             ShipBlock target = ((ShipBlock)_field.get(position.y).get(position.x));
@@ -140,9 +155,11 @@ public final class GameField {
         }
     }
 
+    public HashSet<Point> getShots(){
+        return _shotsList;
+    }
 
     public void draw(){
-        System.out.println("Normal field");
         for(int i = 0;i < _fieldWidth; ++i){
             System.out.print((char)('A'+i) + "\t");
         }
@@ -159,9 +176,7 @@ public final class GameField {
         System.out.println();
     }
 
-    //TODO
     public void drawHidden(){
-        System.out.println("Hidden field");
         for(int i = 0;i < _fieldWidth; ++i){
             System.out.print((char)('A'+i) + "\t");
         }

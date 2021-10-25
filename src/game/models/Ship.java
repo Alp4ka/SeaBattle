@@ -21,4 +21,7 @@ public interface Ship {
     void setOrientation(boolean value);
     int getShipLength();
     void suicide();
+    boolean isHitted();
+    int getHP();
+    int maxHP();
 }
