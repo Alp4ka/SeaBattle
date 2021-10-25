@@ -1,16 +1,25 @@
 package game.utils;
 
-public class Pair<F, S>{
+/**
+ * Pair structure.
+ *
+ * @author Gorkovets Roman
+ * @version 1.0
+ */
+public class Pair<F, S> {
     private F firstValue;
     private S secondValue;
-    public Pair(F first, S second){
+
+    public Pair(F first, S second) {
         firstValue = first;
         secondValue = second;
     }
-    public F getFirstValue(){
+
+    public F getFirstValue() {
         return firstValue;
     }
-    public S getSecondValue(){
+
+    public S getSecondValue() {
         return secondValue;
     }
 }

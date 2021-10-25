@@ -1,20 +1,32 @@
 package game.utils;
 
+/**
+ * Point structure
+ *
+ * @author Gorkovets Roman
+ * @version 1.0
+ */
 public class Point {
     public int x;
     public int y;
 
-    public Point(int x, int y){
+    public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point(Point point){
+    public Point(Point point) {
         this.x = point.x;
         this.y = point.y;
     }
 
-    public Point add(Point point){
+    public static Point getRandom(int maxWidth, int maxHeight) {
+        int x = (int) (Math.random() * maxWidth);
+        int y = (int) (Math.random() * maxHeight);
+        return new Point(x, y);
+    }
+
+    public Point add(Point point) {
         Point result = new Point(this);
         result.x += point.x;
         result.y += point.y;
@@ -40,7 +52,7 @@ public class Point {
         return this.x == point.x && this.y == point.y;
     }
 
-    public String toString(){
+    public String toString() {
         return "(" + x + ";" + y + ")";
     }
 }
